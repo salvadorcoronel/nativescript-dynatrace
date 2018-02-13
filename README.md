@@ -6,7 +6,7 @@ Basic Instrument your application to prepare for monitoring.
 
 - Head on over to https://dynatrace.com/ and sign up for a account.
 - You need to have the credentials of your Dynatrace Application.
-    Example:
+- Example:
     applicationId 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
     environmentId 'XXXXXXXXX'
     cluster 'https://XXXXXX.dynatrace.com'
@@ -15,6 +15,7 @@ Basic Instrument your application to prepare for monitoring.
 
 You need to create a file named dynatrace-service.json with the following structure
 
+```javascript
 {
   "project_info": {
     "applicationId": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
@@ -22,6 +23,7 @@ You need to create a file named dynatrace-service.json with the following struct
     "cluster": "https://XXXXXX.dynatrace.com"
   }
 }
+```
 
 Go to the next path NAME_PROJECT/app/App_Resources/ and paste in that directory your file that you just created
 
