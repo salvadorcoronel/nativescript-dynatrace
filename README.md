@@ -1,8 +1,8 @@
-# Nativescript Dynatrace plugin
+# Nativescript Dynatrace plugin for Android and iOS
 
 Basic Instrument your application to prepare for monitoring.
 
-## (Optional) Prerequisites / Requirements
+## Prerequisites / Requirements
 
 - Head on over to https://dynatrace.com/ and sign up for a account.
 - You need to have the credentials of your Dynatrace Application.
