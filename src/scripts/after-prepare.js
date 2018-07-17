@@ -1,66 +1,112 @@
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = function (hookArgs, projectData) {
-    var platform = hookArgs.platform.toLowerCase();
-    var projectName = projectData.projectName;
-    var dynatraceServiceInfoFilePath = path.join(projectData.appResourcesDirectoryPath, 'dynatrace-service.json');
+    const platform = hookArgs.platform.toLowerCase();
+    const { projectName, appResourcesDirectoryPath } = projectData;
 
-    if (fs.existsSync(dynatraceServiceInfoFilePath)) {
-        var dynatraceServiceInfoJson = require(dynatraceServiceInfoFilePath);
+    // Check if dynatrace-service.json or dynatrace-service.js is there and load it:
 
-        if (dynatraceServiceInfoJson.project_info &&
-            dynatraceServiceInfoJson.project_info.applicationId &&
-            dynatraceServiceInfoJson.project_info.environmentId &&
-            dynatraceServiceInfoJson.project_info.cluster) {
+    const configPathJSON = path.join(appResourcesDirectoryPath, 'dynatrace-service.json');
+    const configPathJS = path.join(appResourcesDirectoryPath, 'dynatrace-service.js');
+    const config = null;
 
-            if (platform === 'android') {
-
-                const gradleDynatraceRuntime = `
-buildscript {
-    repositories {
-        jcenter()
+    if (fs.existsSync(configPathJSON)) {
+        config = require(configPathJSON);;
+    } else if (fs.existsSync(configPathJS)) {
+        config = require(configPathJS);
     }
-    dependencies { 
-        classpath 'com.dynatrace.tools:android:+'
+
+    if (!config) {
+        console.error('You need create dynatrace-service.json or dynatrace-service.js config file!')
     }
-}
 
-apply plugin: 'com.dynatrace.tools.android'
-dynatrace {
-    defaultConfig {
-        applicationId '${dynatraceServiceInfoJson.project_info.applicationId}'
-        environmentId '${dynatraceServiceInfoJson.project_info.environmentId}'
-        cluster '${dynatraceServiceInfoJson.project_info.cluster}'
+    // Validate that the basic properties are in the config:
+
+    if (!config.DTXApplicationID || !config.DTXAgentEnvironment || !config.DTXClusterURL) {
+        console.error('The dynatrace-service config file must include at least the properties DTXApplicationID, DTXAgentEnvironment and DTXClusterURL');
     }
-}
-`;
 
-                var buildGradlePath = path.join(projectData.platformsDir, 'android', 'app', 'build.gradle');
-                if (fs.existsSync(buildGradlePath)) {
-                    var buildGradleContent = fs.readFileSync(buildGradlePath).toString();
-                    if (buildGradleContent.indexOf('dynatrace') === -1) {
-                        fs.writeFileSync(buildGradlePath, buildGradleContent + gradleDynatraceRuntime);
-                        console.log('Dynatrace added to the Project NS Android!');
-                    }
-                }
-            }
+    // Generate the actual config files for Android (build.gradle) or iOS
 
-            if (platform === 'ios') {
-                var infoPlistPath = path.join(projectData.platformsDir, 'ios', projectName, projectName+'-Info.plist');
-                if (fs.existsSync(infoPlistPath)) {
-                    var infoPlistContent = fs.readFileSync(infoPlistPath).toString();
-                    infoPlistContent = infoPlistContent.replace('Dynatrace_DTXAgentEnvironment', dynatraceServiceInfoJson.project_info.environmentId);
-                    infoPlistContent = infoPlistContent.replace('Dynatrace_DTXApplicationID', dynatraceServiceInfoJson.project_info.applicationId);
-                    infoPlistContent = infoPlistContent.replace('Dynatrace_DTXClusterURL', dynatraceServiceInfoJson.project_info.cluster);
-                    fs.writeFileSync(infoPlistPath, infoPlistContent);
-                    console.log('Dynatrace added to the Project NS iOS!');
-                }
+    if (platform === 'android') {
+        const buildGradlePath = path.join(projectData.platformsDir, 'android', 'app', 'build.gradle');
+
+        if (fs.existsSync(buildGradlePath)) {
+            const buildGradleContent = fs.readFileSync(buildGradlePath).toString();
+
+            if (buildGradleContent.indexOf('dynatrace') === -1) {
+                fs.writeFileSync(buildGradlePath, buildGradleContent + getAndroidConfig(config));
+
+                console.log('Dynatrace added to the Project NS Android!');
+            } else {
+                console.error('Dynatrace config already present in build.gradle.');
             }
         } else {
-            console.log('The dynatrace-service.json config file does not have the correct format!');
+            console.error(`${ buildGradlePath } not found.`);
         }
-    } else {
-        console.log('You need create dynatrace-service.json config file!')
+    } else if (platform === 'ios') {
+        const infoPlistPath = path.join(projectData.platformsDir, 'ios', projectName, projectName+'-Info.plist');
+
+        if (fs.existsSync(infoPlistPath)) {
+            const infoPlistContent = fs.readFileSync(infoPlistPath).toString();
+            const beforeClosingDictIndex = infoPlistContent.indexOf('</dict>');
+
+            // TODO: Verify the keys do not exist already!
+
+            fs.writeFileSync(infoPlistPath, infoPlistContent.slice(0, beforeClosingDictIndex) + getIOSConfig(config) + infoPlistContent.slice(beforeClosingDictIndex));
+
+            console.error('Dynatrace added to the Project NS iOS!');
+        } else {
+            console.error(`${ infoPlistPath } not found.`);
+        }
     }
 };
+
+
+function getAndroidConfig(config) {
+    const DTXApplicationID = config.DTXApplicationID;
+    const DTXAgentEnvironment = config.DTXAgentEnvironment;
+    const DTXClusterURL = config.DTXClusterURL;
+
+    delete config.DTXApplicationID;
+    delete config.DTXAgentEnvironment;
+    delete config.DTXClusterURL;
+
+    const agentPropertiesString = Object.entries(config).map(([key, value]) => `'${ key }': '${ value }'`).join(', ');
+
+    return `
+        buildscript {
+            repositories {
+                jcenter()
+            }
+
+            dependencies {
+                classpath 'com.dynatrace.tools:android:+'
+            }
+        }
+
+        apply plugin: 'com.dynatrace.tools.android'
+
+        dynatrace {
+            defaultConfig {
+                applicationId '${ DTXApplicationID }'
+                environmentId '${ DTXAgentEnvironment }'
+                cluster '${ DTXClusterURL }'
+                agentProperties ${ agentPropertiesString }
+            }
+        }
+    `;
+}
+
+function getIOSConfig(config) {
+    return Object.entries(config).map(([key, value]) => {
+        const valueParser = {
+            string: (str) => `<string>${ str }</string>`,
+            number: (int) => `<integer>${ parseInt(int) }</integer>`,
+            boolean: (bool) => `<bool>${ bool }</bool>`,
+        }[typeof value];
+
+        return `    <key>${ key }</key>${ valueParser ? `\n    ${ valueParser(value) }` : '' }`;
+    }).join('\n');
+}
