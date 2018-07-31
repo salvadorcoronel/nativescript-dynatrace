@@ -61,7 +61,7 @@ module.exports = function (hookArgs, projectData) {
 
         if (fs.existsSync(infoPlistPath)) {
             const infoPlistContent = fs.readFileSync(infoPlistPath).toString();
-            const beforeClosingDictIndex = infoPlistContent.indexOf('</dict>');
+            const beforeClosingDictIndex = infoPlistContent.lastIndexOf('</dict>');
 
             // TODO: Verify the keys do not exist already!
 
