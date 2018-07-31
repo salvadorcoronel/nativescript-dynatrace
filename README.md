@@ -7,7 +7,8 @@ Auto-instrument your application with Dynatrace and to prepare it for monitoring
 Prerequisites / Requirements
 ----------------------------
 
-You need a Dynatrace account and the credentials of your Dynatrace Application (`DTXApplicationID`, `DTXAgentEnvironment` and `DTXClusterURL`).
+You need a Dynatrace account and the credentials of your Dynatrace Application (`DTXApplicationID`,
+`DTXAgentEnvironment` and `DTXClusterURL`).
 
 
 Installation
@@ -17,7 +18,8 @@ First, you need to add the Nativescript Dynatrace plugin:
 
     tns plugin add nativescript-dynatrace
 
-Then, you  need to create a file named `dynatrace-service.json` or `dynatrace-service.js` in `NAME_PROJECT/app/App_Resources/` with the following structure:
+Then, you  need to create a file named `dynatrace-service.json` or `dynatrace-service.js` in the project root or in
+`NAME_PROJECT/app/App_Resources/` with the following structure:
 
 ```typescript
 module.exports = {
@@ -54,7 +56,8 @@ module.exports = {
 };
 ```
 
-[Here](https://www.dynatrace.com/support/help/user-experience/mobile-apps/how-do-i-use-advanced-settings-for-android-auto-instrumentation/#367auto-instrumentation-properties) you can find all the auto-instrumentation properties that you can customize.
+[Here](https://www.dynatrace.com/support/help/user-experience/mobile-apps/how-do-i-use-advanced-settings-for-android-auto-instrumentation/#367auto-instrumentation-properties)
+you can find all the auto-instrumentation properties that you can customize.
 
 
 How this plugin works

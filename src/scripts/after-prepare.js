@@ -3,28 +3,39 @@ const path = require('path');
 
 module.exports = function (hookArgs, projectData) {
     const platform = hookArgs.platform.toLowerCase();
-    const { projectName, appResourcesDirectoryPath } = projectData;
+    const { projectName, projectDir, appResourcesDirectoryPath } = projectData;
 
     // Check if dynatrace-service.json or dynatrace-service.js is there and load it:
 
+    const configPathRootJSON = path.join(projectDir, 'dynatrace-service.json');
+    const configPathRootJS = path.join(projectDir, 'dynatrace-service.js');
     const configPathJSON = path.join(appResourcesDirectoryPath, 'dynatrace-service.json');
     const configPathJS = path.join(appResourcesDirectoryPath, 'dynatrace-service.js');
-    const config = null;
 
-    if (fs.existsSync(configPathJSON)) {
+    let config = null;
+
+    if (fs.existsSync(configPathRootJSON)) {
+        config = require(configPathRootJSON);;
+    } else if (fs.existsSync(configPathRootJS)) {
+        config = require(configPathRootJS);;
+    } if (fs.existsSync(configPathJSON)) {
         config = require(configPathJSON);;
     } else if (fs.existsSync(configPathJS)) {
         config = require(configPathJS);
     }
 
     if (!config) {
-        console.error('You need create dynatrace-service.json or dynatrace-service.js config file!')
+        console.error(`You need create dynatrace-service.json or dynatrace-service.js config file in ${ projectDir } or ${ appResourcesDirectoryPath }!`);
+
+        return;
     }
 
     // Validate that the basic properties are in the config:
 
     if (!config.DTXApplicationID || !config.DTXAgentEnvironment || !config.DTXClusterURL) {
         console.error('The dynatrace-service config file must include at least the properties DTXApplicationID, DTXAgentEnvironment and DTXClusterURL');
+
+        return;
     }
 
     // Generate the actual config files for Android (build.gradle) or iOS
@@ -100,12 +111,14 @@ function getAndroidConfig(config) {
 }
 
 function getIOSConfig(config) {
+    const parsers = {
+        string: (str) => `<string>${ str }</string>`,
+        number: (int) => `<integer>${ parseInt(int) }</integer>`,
+        boolean: (bool) => `<bool>${ bool }</bool>`,
+    };
+
     return Object.entries(config).map(([key, value]) => {
-        const valueParser = {
-            string: (str) => `<string>${ str }</string>`,
-            number: (int) => `<integer>${ parseInt(int) }</integer>`,
-            boolean: (bool) => `<bool>${ bool }</bool>`,
-        }[typeof value];
+        const valueParser = parsers[typeof value];
 
         return `    <key>${ key }</key>${ valueParser ? `\n    ${ valueParser(value) }` : '' }`;
     }).join('\n');
