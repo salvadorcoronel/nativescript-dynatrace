@@ -13,6 +13,7 @@ seed-tests/seed-copy/**/*.*
 seed-tests/seed-copy-new-git-repo/**/*.*
 !demo/karma.conf.js
 !demo/app/tests/*.js
+!demo/dynatrace-service.js
 demo/*.d.ts
 !demo/references.d.ts
 demo/lib
