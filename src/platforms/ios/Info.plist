@@ -2,11 +2,5 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>DTXAgentEnvironment</key>
-    <string>Dynatrace_DTXAgentEnvironment</string>
-    <key>DTXApplicationID</key>
-    <string>Dynatrace_DTXApplicationID</string>
-    <key>DTXClusterURL</key>
-    <string>Dynatrace_DTXClusterURL</string>
 </dict>
 </plist>
