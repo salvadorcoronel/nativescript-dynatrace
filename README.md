@@ -1,42 +1,78 @@
-# Nativescript Dynatrace plugin for Android and iOS
+Nativescript Dynatrace plugin for Android and iOS
+=================================================
 
-Basic Instrument your application to prepare for monitoring.
+Auto-instrument your application with Dynatrace and to prepare it for monitoring.
 
-## Prerequisites / Requirements
 
-- Head on over to https://dynatrace.com/ and sign up for a account.
-- You need to have the credentials of your Dynatrace Application.
-- Example:
-    applicationId 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
-    environmentId 'XXXXXXXXX'
-    cluster 'https://XXXXXX.dynatrace.com'
+Prerequisites / Requirements
+----------------------------
 
-## Installation
+You need a Dynatrace account and the credentials of your Dynatrace Application (`DTXApplicationID`,
+`DTXAgentEnvironment` and `DTXClusterURL`).
 
-You need to create a file named dynatrace-service.json with the following structure
 
-```javascript
-{
-  "project_info": {
-    "applicationId": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
-    "environmentId": "XXXXXXXXX",
-    "cluster": "https://XXXXXX.dynatrace.com"
-  }
-}
+Installation
+------------
+
+First, you need to add the Nativescript Dynatrace plugin:
+
+    tns plugin add nativescript-dynatrace
+
+Then, you  need to create a file named `dynatrace-service.json` or `dynatrace-service.js` in the project root or in
+`NAME_PROJECT/app/App_Resources/` with the following structure:
+
+```typescript
+module.exports = {
+  DTXAgentEnvironment: string,
+  DTXAllowAnyCert: boolean,
+  DTXApplicationID: string,
+  DTXAutoActionMaxDurationMilliseconds: int,
+  DTXAutoActionTimeoutMilliseconds: int,
+  DTXAutoStart: boolean,
+  DTXBKSFileName: string,
+  DTXBKSPassword: string,
+  DTXClusterURL: boolean,
+  DTXCrashReportingEnabled: boolean,
+  DTXExcludePackages: string,
+  DTXHybridApplication: boolean,
+  DTXIncludeAllPackages: boolean,
+  DTXIncludePackages: string,
+  DTXInstrumentAutoUserAction: boolean,
+  DTXInstrumentGPSLocation: boolean,
+  DTXInstrumentLifecycleMonitoring: boolean,
+  DTXInstrumentWebRequestTagging: boolean,
+  DTXInstrumentWebRequestTiming: boolean,
+  DTXLogLevel: string,
+  DTXManagedCluster: boolean,
+  DTXMonitorCookie: string,
+  DTXMultiDexKeep: string,
+  DTXMultiDexKeepFile: string,
+  DTXPrimaryDexLimit: int,
+  DTXSecondaryDexLimit: int,
+  DTXSetCookiesForDomain: string,
+  DTXUserOptIn: boolean,
+  DTXVersionCode: int,
+  DTXVersionName: string,
+};
 ```
 
-Go to the next path NAME_PROJECT/app/App_Resources/ and paste in that directory your file that you just created
+[Here](https://www.dynatrace.com/support/help/user-experience/mobile-apps/how-do-i-use-advanced-settings-for-android-auto-instrumentation/#367auto-instrumentation-properties)
+you can find all the auto-instrumentation properties that you can customize.
 
-Adding the Nativescript Dynatrace plugin
 
-```javascript
-tns plugin add nativescript-dynatrace
-```
+How this plugin works
+---------------------
 
-## API
+Work in progress...
 
-Developing...
-    
-## License
+
+API
+---
+
+Work in progress...
+
+
+License
+-------
 
 Apache License Version 2.0, January 2004
