@@ -1,6 +1,6 @@
 {
   "name": "nativescript-dynatrace",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "NativeScript plugin for Dynatrace.",
   "main": "dynatrace",
   "typings": "index.d.ts",
