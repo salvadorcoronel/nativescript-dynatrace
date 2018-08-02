@@ -114,7 +114,7 @@ function getIOSConfig(config) {
     const parsers = {
         string: (str) => `<string>${ str }</string>`,
         number: (int) => `<integer>${ parseInt(int) }</integer>`,
-        boolean: (bool) => `<bool>${ bool }</bool>`,
+        boolean: (bool) => `<${ bool }/>`,
     };
 
     return Object.entries(config).map(([key, value]) => {

@@ -7,6 +7,8 @@
 src/*.d.ts
 !src/index.d.ts
 !src/references.d.ts
+!src/postinstall.js
+!src/preuninstall.js
 !src/scripts/*.js
 !seed-tests/*.js
 seed-tests/seed-copy/**/*.*
